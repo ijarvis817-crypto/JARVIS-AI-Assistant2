@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI Assistant</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:#050b16;color:#00eaff;font-family:Arial,sans-serif;text-align:center}
+header{padding:25px 10px;border-bottom:1px solid #087b91}
+header h1{font-size:30px;letter-spacing:4px;text-shadow:0 0 15px #00eaff}
+header p{color:#8baeb9;margin-top:8px}
+.arc{width:180px;height:180px;border:3px solid #00eaff;border-radius:50%;margin:45px auto 25px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 25px #00eaff,inset 0 0 25px #00eaff;animation:glow 2s infinite alternate}
+.arc span{font-size:65px}
+@keyframes glow{from{box-shadow:0 0 10px #00eaff}to{box-shadow:0 0 40px #00eaff}}
+.status{color:#8baeb9;margin:15px}
+button{background:#00d9ff;color:#00131b;border:0;padding:15px 28px;border-radius:30px;font-size:16px;font-weight:bold;margin:10px}
+button:active{transform:scale(.95)}
+#output{margin:25px auto;padding:18px;width:90%;min-height:80px;background:#0c1b2b;border:1px solid #087b91;border-radius:12px;color:white;line-height:1.6}
+footer{margin-top:35px;padding-bottom:25px;color:#587b8b;font-size:12px}
+</style>
+</head>
+<body>
+<header><h1>J.A.R.V.I.S</h1><p>PERSONAL AI VOICE ASSISTANT</p></header>
+<div class="arc"><span>◉</span></div>
+<h3>HELLO, I'M JARVIS</h3>
+<p class="status" id="status">System Ready</p>
+<button onclick="startListening()">🎙 TALK TO JARVIS</button>
+<div id="output">Hello! I am JARVIS. How can I help you?</div>
+<button onclick="speak('Hello! How can I help you?')">🔊 SPEAK</button>
+<footer>JARVIS AI ASSISTANT | VERSION 1.0</footer>
+<script>
+function speak(text){
+ document.getElementById("output").innerText=text;
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang="en-IN"; utterance.rate=.95; speechSynthesis.speak(utterance);
+}
+function startListening(){
+ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SpeechRecognition){speak("Voice recognition is not supported in this browser.");return;}
+ const recognition=new SpeechRecognition();
+ recognition.lang="en-IN"; recognition.continuous=false; recognition.interimResults=false;
+ document.getElementById("status").innerText="Listening...";
+ recognition.onresult=function(event){
+  const command=event.results[0][0].transcript.toLowerCase();
+  document.getElementById("status").innerText="Command received";
+  handleCommand(command);
+ };
+ recognition.onerror=function(){document.getElementById("status").innerText="Voice recognition error. Try again.";};
+ recognition.onend=function(){if(document.getElementById("status").innerText==="Listening...")document.getElementById("status").innerText="System Ready";};
+ recognition.start();
+}
+function handleCommand(command){
+ if(command.includes("hello")||command.includes("hi"))speak("Hello sir! I am JARVIS. How are you?");
+ else if(command.includes("time"))speak("The current time is "+new Date().toLocaleTimeString());
+ else if(command.includes("date"))speak("Today's date is "+new Date().toDateString());
+ else if(command.includes("open youtube")){speak("Opening YouTube");window.open("https://www.youtube.com","_blank");}
+ else if(command.includes("open google")){speak("Opening Google");window.open("https://www.google.com","_blank");}
+ else if(command.includes("search")){const query=command.replace("search","").trim();speak("Searching the internet");window.open("https://www.google.com/search?q="+encodeURIComponent(query),"_blank");}
+ else speak("I received your command: "+command+". More AI features will be added soon.");
+}
+</script>
+</body>
+</html>
